@@ -23,7 +23,6 @@ actions:
 
       secondEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
 
-      api.marketplace.console.WriteLog("${env.name}->" + "${env.name}");
       resp = api.env.control.ExecCmdByGroup({
           envName: "${env.name}",
           session: session,
@@ -32,7 +31,6 @@ actions:
           userName: "root"
         });
 
-      api.marketplace.console.WriteLog("resp check for lock file->" + resp);
       if (resp.result != 0) return resp;
       isLockEnv = !!(resp.responses[0].out == "true");
 
@@ -44,7 +42,6 @@ actions:
         userName: "root"
       });
 
-      api.marketplace.console.WriteLog("resp check for lock file->" + resp);
       if (resp.result != 0) return resp;
 
       isSecondExecuted = !!(resp.responses[0].out == "true");
