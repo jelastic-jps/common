@@ -51,7 +51,7 @@ actions:
     createLockFile:
       app_id: ${this.app_id}
       envName: ${env.envName}
-      postfix: executed
+      extension: executed
 
   removeExecutedEnvFile:
     script: |
@@ -59,7 +59,7 @@ actions:
         envName: "${env.envName}",
         session: session,
         nodeGroup: "cp",
-        commandList: [{"command": "rm -rf /root/${this.app_id}.${this.postfix:executed}"}],
+        commandList: [{"command": "rm -rf /root/${this.app_id}.${this.extension:executed}"}],
         userName: "root"
       });
   createLockFile:
@@ -68,7 +68,7 @@ actions:
         envName: "${this.envName}",
         session: session,
         nodeGroup: "cp",
-        commandList: [{"command": "touch /root/${this.app_id}.${this.postfix:lock}"}],
+        commandList: [{"command": "touch /root/${this.app_id}.${this.extension:lock}"}],
         userName: "root"
       });
   executeAction:
