@@ -1,7 +1,7 @@
 actions:
   checkClustering:
     script: |
-      var secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondExecuted = false;
+      var secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondaryExecuted = false;
       resp = api.env.control.ExecCmdByGroup({
         envName: "${env.name}",
         session: session,
@@ -34,14 +34,14 @@ actions:
         userName: "root"
       });
       if (resp.result != 0) return resp;
-      isSecondExecuted = !!(resp.responses[0].out == "true");
+      isSecondaryExecuted = !!(resp.responses[0].out == "true");
       return {
         result: 0,
         onAfterReturn: {
           setGlobals: {
             secondaryEnvName: secondaryEnvName,
             isSecondaryEnv: !!isLockEnv,
-            isSecondExecuted: isSecondExecuted,
+            isSecondaryExecuted: isSecondaryExecuted,
             cluster: config.cluster
           }
         }
