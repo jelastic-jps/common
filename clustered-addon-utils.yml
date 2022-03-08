@@ -1,7 +1,7 @@
 actions:
   checkClustering:
     script: |
-      var secondEnvName, resp, config= {}, isLockEnv = false, isSecondExecuted = false;
+      var secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondExecuted = false;
       resp = api.env.control.ExecCmdByGroup({
         envName: "${env.name}",
         session: session,
@@ -16,7 +16,7 @@ actions:
         config[tmp[0]] = tmp[1];
       }
       if (config.cluster) config.cluster = String(config.cluster) != "false";
-      secondEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
+      secondaryEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
       resp = api.env.control.ExecCmdByGroup({
           envName: "${env.name}",
           session: session,
@@ -27,7 +27,7 @@ actions:
       if (resp.result != 0) return resp;
       isLockEnv = !!(resp.responses[0].out == "true");
       resp = api.env.control.ExecCmdByGroup({
-        envName: secondEnvName,
+        envName: secondaryEnvName,
         session: session,
         nodeGroup: "cp",
         commandList: [{"command": "[[ -f \"/root/${this.app_id}.executed\" ]] && echo true || echo false"}],
@@ -39,14 +39,14 @@ actions:
         result: 0,
         onAfterReturn: {
           setGlobals: {
-            secondEnvName: secondEnvName,
-            isSecondEnv: !!isLockEnv,
+            secondaryEnvName: secondaryEnvName,
+            isSecondaryEnv: !!isLockEnv,
             isSecondExecuted: isSecondExecuted,
             cluster: config.cluster
           }
         }
       }
-      return { result: 0, secondEnvName: secondEnvName }
+      return { result: 0, secondaryEnvName: secondaryEnvName }
   markExecutedEnvFile:
     createLockFile:
       app_id: ${this.app_id}
