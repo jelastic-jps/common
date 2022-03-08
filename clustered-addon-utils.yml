@@ -42,13 +42,13 @@ actions:
             secondaryEnvName: secondaryEnvName,
             isSecondaryEnv: !!isLockEnv,
             isSecondaryExecuted: isSecondaryExecuted,
-            cluster: config.cluster
+            cluster: !!config.cluster
           }
         }
       }
       return { result: 0, secondaryEnvName: secondaryEnvName }
   markExecutedEnvFile:
-    createLockFile:
+    createFile:
       app_id: ${this.app_id}
       envName: ${env.envName}
       extension: executed
@@ -62,7 +62,7 @@ actions:
         commandList: [{"command": "rm -rf /root/${this.app_id}.${this.extension:executed}"}],
         userName: "root"
       });
-  createLockFile:
+  createFile:
     script: |
       return api.env.control.ExecCmdByGroup({
         envName: "${this.envName}",
