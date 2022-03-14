@@ -5,7 +5,7 @@ actions:
       resp = api.env.control.ExecCmdByGroup({
         envName: "${env.name}",
         session: session,
-        nodeGroup: "cp",
+        nodeGroup: "${globals.nodeGroup}",
         commandList: [{"command": "cat /root/clustering"}],
         userName: "root"
       });
@@ -20,7 +20,7 @@ actions:
       resp = api.env.control.ExecCmdByGroup({
           envName: "${env.name}",
           session: session,
-          nodeGroup: "cp",
+          nodeGroup: "${globals.nodeGroup}",
           commandList: [{"command": "[[ -f \"/root/${this.app_id}.lock\" ]] && echo true || echo false"}],
           userName: "root"
         });
@@ -29,7 +29,7 @@ actions:
       resp = api.env.control.ExecCmdByGroup({
         envName: secondaryEnvName,
         session: session,
-        nodeGroup: "cp",
+        nodeGroup: "${globals.nodeGroup}",
         commandList: [{"command": "[[ -f \"/root/${this.app_id}.executed\" ]] && echo true || echo false"}],
         userName: "root"
       });
@@ -58,7 +58,7 @@ actions:
       return api.env.control.ExecCmdByGroup({
         envName: "${env.envName}",
         session: session,
-        nodeGroup: "cp",
+        nodeGroup: "${globals.nodeGroup}",
         commandList: [{"command": "rm -rf /root/${this.app_id}.${this.extension:executed}"}],
         userName: "root"
       });
@@ -67,7 +67,7 @@ actions:
       return api.env.control.ExecCmdByGroup({
         envName: "${this.envName}",
         session: session,
-        nodeGroup: "cp",
+        nodeGroup: "${globals.nodeGroup}",
         commandList: [{"command": "touch /root/${this.app_id}.${this.extension:lock}"}],
         userName: "root"
       });
@@ -86,7 +86,7 @@ actions:
         targetAppid: envApid,
         search: {
           appstore: 1,
-          nodeGroup: "cp",
+          nodeGroup: "${globals.nodeGroup}",
           nodeType: nodeType,
           jpsType: "update"
         }
