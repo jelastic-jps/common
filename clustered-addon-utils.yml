@@ -5,7 +5,7 @@ actions:
       resp = api.env.control.ExecCmdByGroup({
         envName: "${env.name}",
         session: session,
-        nodeGroup: "${globals.nodeGroup}",
+        nodeGroup: "${this.nodeGroup}",
         commandList: [{"command": "cat /root/clustering"}],
         userName: "root"
       });
@@ -20,7 +20,7 @@ actions:
       resp = api.env.control.ExecCmdByGroup({
           envName: "${env.name}",
           session: session,
-          nodeGroup: "${globals.nodeGroup}",
+          nodeGroup: "${this.nodeGroup}",
           commandList: [{"command": "[[ -f \"/root/${this.app_id}.lock\" ]] && echo true || echo false"}],
           userName: "root"
         });
@@ -29,7 +29,7 @@ actions:
       resp = api.env.control.ExecCmdByGroup({
         envName: secondaryEnvName,
         session: session,
-        nodeGroup: "${globals.nodeGroup}",
+        nodeGroup: "${this.nodeGroup}",
         commandList: [{"command": "[[ -f \"/root/${this.app_id}.executed\" ]] && echo true || echo false"}],
         userName: "root"
       });
@@ -49,6 +49,7 @@ actions:
       return { result: 0, secondaryEnvName: secondaryEnvName }
   markExecutedEnvFile:
     createFile:
+      nodeGroup: ${this.nodeGroup}
       app_id: ${this.app_id}
       envName: ${env.envName}
       extension: executed
@@ -58,7 +59,7 @@ actions:
       return api.env.control.ExecCmdByGroup({
         envName: "${env.envName}",
         session: session,
-        nodeGroup: "${globals.nodeGroup}",
+        nodeGroup: "${this.nodeGroup}",
         commandList: [{"command": "rm -rf /root/${this.app_id}.${this.extension:executed}"}],
         userName: "root"
       });
@@ -67,7 +68,7 @@ actions:
       return api.env.control.ExecCmdByGroup({
         envName: "${this.envName}",
         session: session,
-        nodeGroup: "${globals.nodeGroup}",
+        nodeGroup: "${this.nodeGroup}",
         commandList: [{"command": "touch /root/${this.app_id}.${this.extension:lock}"}],
         userName: "root"
       });
@@ -77,7 +78,7 @@ actions:
       resp = api.env.control.GetEnvInfo("${this.envName}", session);
       if (resp.result != 0) return resp;
       for (var i = 0, n = resp.nodes.length; i < n; i++) {
-        if (resp.nodes[i].nodeGroup == "${globals.nodeGroup}") {
+        if (resp.nodes[i].nodeGroup == "${this.nodeGroup}") {
           nodeType = resp.nodes[i].nodeType;
         }
       }
@@ -86,7 +87,7 @@ actions:
         targetAppid: envApid,
         search: {
           appstore: 1,
-          nodeGroup: "${globals.nodeGroup}",
+          nodeGroup: "${this.nodeGroup}",
           nodeType: nodeType,
           jpsType: "update"
         }
