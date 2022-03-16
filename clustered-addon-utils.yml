@@ -88,9 +88,7 @@ actions:
         search: {
           appstore: 1,
           app_id: ${this.app_id},
-          nodeGroup: "${this.nodeGroup}",
-          nodeType: nodeType,
-          jpsType: "update"
+          nodeGroup: "${this.nodeGroup}"
         }
       });
       if (resp.result != 0) return resp;
