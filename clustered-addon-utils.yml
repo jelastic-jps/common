@@ -97,16 +97,22 @@ actions:
         uniqueName = resp.response.apps[0].uniqueName;
       }
       
-      if ("${this.action:}" == "delete") {
-        return api.marketplace.jps.Uninstall(appid, session, uniqueName);
+      if (uniqueName) {
+        if ("${this.action:}" == "delete") {
+          return api.marketplace.jps.Uninstall(appid, session, uniqueName);
+        }
+
+        return api.marketplace.jps.ExecuteAppAction({
+          appid: appid,
+          session: session,
+          appUniqueName: uniqueName,
+          action: "${this.action}",
+          params: {
+              customDomains: "${settings.customDomains}"
+          }
+        });
       }
       
-      return api.marketplace.jps.ExecuteAppAction({
-        appid: appid,
-        session: session,
-        appUniqueName: uniqueName,
-        action: "${this.action}",
-        params: {
-            customDomains: "${settings.customDomains}"
-        }
-      });
+      return {
+        result: 0
+      }
