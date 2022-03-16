@@ -94,18 +94,15 @@ actions:
         }
       });
       if (resp.result != 0) return resp;
+      
       if (resp.response && resp.response.apps) {
-        for (var i = 0, n = resp.response.apps.length; i < n; i++) {
-          if (resp.response.apps[i].app_id == "${this.app_id}") {
-            uniqueName = resp.response.apps[i].uniqueName;
-            break;
-          }
-        }
+        uniqueName = resp.response.apps[0].uniqueName;
       }
-      params = "${this.parameters:}" || {};
+      
       if ("${this.action:}" == "delete") {
         return api.marketplace.jps.Uninstall(appid, session, uniqueName);
       }
+      
       return api.marketplace.jps.ExecuteAppAction({
         appid: appid,
         session: session,
