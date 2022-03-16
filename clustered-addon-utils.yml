@@ -98,7 +98,7 @@ actions:
       }
       
       if (uniqueName) {
-        if ("${this.action:}" == "delete") {
+        if ("${this.action:}" == "uninstall") {
           return api.marketplace.jps.Uninstall(appid, session, uniqueName);
         }
 
