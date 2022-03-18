@@ -74,7 +74,7 @@ actions:
       });
   executeAction:
     script: |
-      var envAppid, nodeType, resp, params = {};
+      var envAppid, nodeType, resp, params = {}, uniqueName = "";
       resp = api.env.control.GetEnvInfo("${this.envName}", session);
       if (resp.result != 0) return resp;
       for (var i = 0, n = resp.nodes.length; i < n; i++) {
