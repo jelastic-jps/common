@@ -87,7 +87,7 @@ actions:
         targetAppid: envApid,
         search: {
           appstore: 1,
-          app_id: ${this.app_id},
+          app_id: "${this.app_id}",
           nodeGroup: "${this.nodeGroup}"
         }
       });
