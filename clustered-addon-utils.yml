@@ -118,7 +118,9 @@ actions:
           appUniqueName: uniqueName,
           action: "${this.action}",
           params: {
-              customDomains: "${settings.customDomains}"
+              customDomains: "${settings.customDomains:}",
+              customCname: "${settings.customCname:}",
+              header: "${settings.header:}"
           }
         });
       }
