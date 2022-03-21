@@ -33,7 +33,7 @@ actions:
         secondaryEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
       }
       
-      primaryEnvName = (secondaryEnvName == config.envName1) ? config.envName1 : config.envName2;
+      primaryEnvName = (secondaryEnvName == config.envName1) ? config.envName2 : config.envName1;
 
       resp = api.env.control.ExecCmdByGroup({
         envName: secondaryEnvName,
