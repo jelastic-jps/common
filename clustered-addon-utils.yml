@@ -16,8 +16,7 @@ actions:
         config[tmp[0]] = tmp[1];
       }
       if (config.cluster) config.cluster = String(config.cluster) != "false";
-      primaryEnvName = ("${env.name}" == config.envName1) ? config.envName1 : config.envName2;
-      secondaryEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
+      
       resp = api.env.control.ExecCmdByGroup({
           envName: "${env.name}",
           session: session,
@@ -27,6 +26,15 @@ actions:
         });
       if (resp.result != 0) return resp;
       isLockEnv = !!(resp.responses[0].out == "true");
+      
+      if (!!isLockEnv) {
+        secondaryEnvName = "${env.name}";
+      } else {
+        secondaryEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
+      }
+      
+      primaryEnvName = (secondaryEnvName == config.envName1) ? config.envName1 : config.envName2;
+
       resp = api.env.control.ExecCmdByGroup({
         envName: secondaryEnvName,
         session: session,
