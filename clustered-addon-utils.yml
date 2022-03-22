@@ -6,10 +6,17 @@ actions:
         envName: "${env.name}",
         session: session,
         nodeGroup: "${this.nodeGroup}",
-        commandList: [{"command": "cat /root/clustering"}],
+        commandList: [{"command": "[ -f '/tmp/clustering' ] && cat /tmp/clustering || echo false"}],
         userName: "root"
-      });
+      });      
       if (resp.result != 0) return resp;
+      
+      if (resp.responses[0].out == "false") {
+        return {
+          result: 0
+        }
+      }
+      
       text = resp.responses[0].out.split("\n");
       for (var i = 0, n = text.length; i < n; i++) {
         tmp = text[i].split("=");
