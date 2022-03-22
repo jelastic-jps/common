@@ -83,6 +83,7 @@ actions:
         userName: "root"
       });
   executeAction:
+    settings: ${settings.toJSON()}
     script: |
       var envAppid, nodeType, resp, params = {}, uniqueName = "";
       resp = api.env.control.GetEnvInfo("${this.envName}", session);
@@ -117,7 +118,7 @@ actions:
           session: session,
           appUniqueName: uniqueName,
           action: "${this.action}",
-          params: ${settings:}
+          params: settings
         });
       }
       
