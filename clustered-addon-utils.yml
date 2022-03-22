@@ -117,7 +117,7 @@ actions:
           session: session,
           appUniqueName: uniqueName,
           action: "${this.action}",
-          params: "${settings}"
+          params: ${settings:}
         });
       }
       
