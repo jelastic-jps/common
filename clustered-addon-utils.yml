@@ -1,7 +1,7 @@
 actions:
   checkClustering:
     script: |
-      var primaryEnvName, secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondaryExecuted = false;
+      var primaryEnvName, secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondaryExecuted = false, isOppositeExecuted = false;
       resp = api.env.control.ExecCmdByGroup({
         envName: "${env.name}",
         session: session,
@@ -44,6 +44,16 @@ actions:
       });
       if (resp.result != 0) return resp;
       isSecondaryExecuted = !!(resp.responses[0].out == "true");
+      
+      resp = api.env.control.ExecCmdByGroup({
+        envName: ("${env.name}" == config.envName1) ? config.envName2 : config.envName1,
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "[[ -f \"/root/${this.app_id}.executed\" ]] && echo true || echo false"}],
+        userName: "root"
+      });
+      if (resp.result != 0) return resp;
+      isOppositeExecuted = !!(resp.responses[0].out == "true");
       return {
         result: 0,
         onAfterReturn: {
@@ -52,6 +62,7 @@ actions:
             secondaryEnvName: secondaryEnvName,
             isSecondaryEnv: !!isLockEnv,
             isSecondaryExecuted: isSecondaryExecuted,
+            isOppositeExecuted: isOppositeExecuted,
             cluster: !!config.cluster
           }
         }
