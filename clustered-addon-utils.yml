@@ -6,7 +6,7 @@ actions:
         envName: "${env.name}",
         session: session,
         nodeGroup: "${this.nodeGroup}",
-        commandList: [{"command": "[ -f '/tmp/clustering' ] && cat /tmp/clustering || echo false"}],
+        commandList: [{"command": "[ -f '/root/clustering' ] && cat /root/clustering || echo false"}],
         userName: "root"
       });      
       if (resp.result != 0) return resp;
