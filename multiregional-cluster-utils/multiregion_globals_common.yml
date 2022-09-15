@@ -4,7 +4,7 @@ actions:
         var cluster_app = '${globals.cluster_app}';
         var regions = '${settings.regions}'.split(','),
             pgpoolRegions = '${settings.pgpool2Regions}'.split(','),
-            cluster_app_display_name = db_server_name[0].toUpperCase() + db_server_name.slice(1),
+            cluster_app_display_name = cluster_app[0].toUpperCase() + cluster_app.slice(1),
             envGroups = eval('(' + MANIFEST + ')').envGroups, index,
             onAfterReturn = { setGlobals: {} }, 
             glbs = onAfterReturn.setGlobals,
