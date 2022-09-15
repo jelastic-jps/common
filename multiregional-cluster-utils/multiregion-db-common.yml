@@ -5,7 +5,7 @@ actions:
       var envGroups = eval('(' + MANIFEST + ')').envGroups;
       for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         actions.push({
-          jps: "${baseUrl}/scripts/manifest_${globals.cluster_db}.jps?_r=${fn.random}",
+          jps: "${baseUrl}/scripts/manifest_${globals.cluster_app}.jps?_r=${fn.random}",
           envName: "${settings.envName}-" + cluster,
           loggerName: "${settings.envName}-" + cluster,
           envGroups: "Database cluster ${settings.envName}",
