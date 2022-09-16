@@ -3,13 +3,12 @@ actions:
   - script: |
       var app_name = '${globals.cluster_app}'.toLowerCase(),
       regions = '${settings.regions}'.split(','), actions = [];
-      var envGroups = eval('(' + MANIFEST + ')').envGroups;
       for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         actions.push({
           jps: "${baseUrl}/scripts/manifest_" + app_name + ".jps?_r=${fn.random}",
           envName: "${settings.envName}-" + cluster,
           loggerName: "${settings.envName}-" + cluster,
-          envGroups: "Database cluster ${settings.envName}",
+          envGroups: "${globals.envGroups}",
           displayName: "${globals.displayName-" + cluster + "}",
           region: "${globals.region-" + cluster + "}",
           settings: {
