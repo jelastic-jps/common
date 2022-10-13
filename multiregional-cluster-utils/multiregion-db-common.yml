@@ -17,7 +17,6 @@ actions:
             regions: "${settings.regions}",
             topology: "${settings.topology}",
             vpnAppid: "${globals.vpnAppid}",
-            extip: "${settings.externalIpAddresses:false}",
             internalNetworkEnabled: "${settings.internalNetworkEnabled}",
             mainEnvName: "${settings.envName}"
           }
