@@ -16,6 +16,7 @@ actions:
             password: "${globals.password}",
             regions: "${settings.regions}",
             topology: "${settings.topology}",
+            externalIpAddresses: "${settings.externalIpAddresses:false}",
             vpnAppid: "${globals.vpnAppid}",
             internalNetworkEnabled: "${settings.internalNetworkEnabled}",
             mainEnvName: "${settings.envName}"
