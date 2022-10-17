@@ -2,7 +2,7 @@ actions:
   createEnvs:
   - script: |
       var app_name = '${globals.cluster_app}'.toLowerCase(),
-      var externalIpAddresses = ('${settings.externalIpAddresses}' === 'true');
+      var externalIpAddresses = ('${settings.externalIpAddresses}' === 'true'),
       regions = '${settings.regions}'.split(','), actions = [];
       for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         actions.push({
