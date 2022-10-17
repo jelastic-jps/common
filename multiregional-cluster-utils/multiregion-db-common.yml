@@ -2,6 +2,7 @@ actions:
   createEnvs:
   - script: |
       var app_name = '${globals.cluster_app}'.toLowerCase(),
+      var externalIpAddresses = ('${settings.externalIpAddresses}' === 'true');
       regions = '${settings.regions}'.split(','), actions = [];
       for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         actions.push({
@@ -16,7 +17,7 @@ actions:
             password: "${globals.password}",
             regions: "${settings.regions}",
             topology: "${settings.topology}",
-            externalIpAddresses: "${settings.externalIpAddresses:false}",
+            externalIpAddresses: externalIpAddresses,
             vpnAppid: "${globals.vpnAppid}",
             internalNetworkEnabled: "${settings.internalNetworkEnabled}",
             mainEnvName: "${settings.envName}"
