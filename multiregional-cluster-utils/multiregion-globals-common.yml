@@ -9,7 +9,7 @@ actions:
             onAfterReturn = { setGlobals: {} }, 
             glbs = onAfterReturn.setGlobals,
             resp, domain;
-        resp = jelastic.env.control.GetRegions(appid, session);
+        resp = api.env.control.GetRegions(appid, session);
         if (resp.result != 0) return resp;
         resp = resp.array;
         for (var i = 0, n = regions.length; i < n; i ++) {
