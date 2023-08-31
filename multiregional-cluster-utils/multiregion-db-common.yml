@@ -11,7 +11,7 @@ actions:
           loggerName: "${settings.envName}-" + cluster,
           envGroups: "${globals.envGroups}",
           displayName: "${globals.displayName-" + cluster + "}",
-          region: "${globals.region-" + cluster + "}",
+          region: regions[cluster-1],
           settings: {
             nodeType: "${settings.nodeType}",
             password: "${globals.password}",
