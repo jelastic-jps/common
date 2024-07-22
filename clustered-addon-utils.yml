@@ -91,13 +91,22 @@ actions:
         commandList: [{"command": "rm -rf /root/${this.app_id}.${this.extension:executed}"}],
         userName: "root"
       });
-  createFile:
+  createLockFile:
     script: |
       return api.env.control.ExecCmdByGroup({
-        envName: "${this.envName}",
+        envName: "${env.envName}",
         session: session,
         nodeGroup: "${this.nodeGroup}",
-        commandList: [{"command": "touch /root/${this.app_id}.${this.extension:lock}"}],
+        commandList: [{"command": "touch /root/${this.app_id}.lock"}],
+        userName: "root"
+      });
+  removeLockFile:
+    script: |
+      return api.env.control.ExecCmdByGroup({
+        envName: "${env.envName}",
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "rm -rf /root/${this.app_id}.lock"}],
         userName: "root"
       });
   executeAction:
