@@ -8,38 +8,36 @@ actions:
         nodeGroup: "${this.nodeGroup}",
         commandList: [{"command": "[ -f '/root/clustering' ] && cat /root/clustering || echo false"}],
         userName: "root"
-      });      
+      });
       if (resp.result != 0) return resp;
-      
+
       if (resp.responses[0].out == "false") {
-        return {
-          result: 0
-        }
+        return { result: 0 }
       }
-      
+
       text = resp.responses[0].out.split("\n");
       for (var i = 0, n = text.length; i < n; i++) {
         tmp = text[i].split("=");
         config[tmp[0]] = tmp[1];
       }
       if (config.cluster) config.cluster = String(config.cluster) != "false";
-      
+
       resp = api.env.control.ExecCmdByGroup({
-          envName: "${env.name}",
-          session: session,
-          nodeGroup: "${this.nodeGroup}",
-          commandList: [{"command": "[[ -f \"/root/${this.app_id}.lock\" ]] && echo true || echo false"}],
-          userName: "root"
-        });
+        envName: "${env.name}",
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "[[ -f \"/root/${this.app_id}.lock\" ]] && echo true || echo false"}],
+        userName: "root"
+      });
       if (resp.result != 0) return resp;
-      isLockEnv = !!(resp.responses[0].out == "true");
-      
-      if (!!isLockEnv) {
+      isLockEnv = (resp.responses[0].out == "true");
+
+      if (isLockEnv) {
         secondaryEnvName = "${env.name}";
       } else {
         secondaryEnvName = ("${env.name}" == config.envName1) ? config.envName2 : config.envName1;
       }
-      
+
       primaryEnvName = (secondaryEnvName == config.envName1) ? config.envName2 : config.envName1;
 
       resp = api.env.control.ExecCmdByGroup({
@@ -50,8 +48,8 @@ actions:
         userName: "root"
       });
       if (resp.result != 0) return resp;
-      isSecondaryExecuted = !!(resp.responses[0].out == "true");
-      
+      isSecondaryExecuted = (resp.responses[0].out == "true");
+
       resp = api.env.control.ExecCmdByGroup({
         envName: ("${env.name}" == config.envName1) ? config.envName2 : config.envName1,
         session: session,
@@ -60,21 +58,21 @@ actions:
         userName: "root"
       });
       if (resp.result != 0) return resp;
-      isOppositeExecuted = !!(resp.responses[0].out == "true");
+      isOppositeExecuted = (resp.responses[0].out == "true");
+
       return {
         result: 0,
         onAfterReturn: {
           setGlobals: {
             primaryEnvName: primaryEnvName,
             secondaryEnvName: secondaryEnvName,
-            isSecondaryEnv: !!isLockEnv,
+            isSecondaryEnv: isLockEnv,
             isSecondaryExecuted: isSecondaryExecuted,
             isOppositeExecuted: isOppositeExecuted,
-            cluster: !!config.cluster
+            cluster: config.cluster
           }
         }
-      }
-      return { result: 0, secondaryEnvName: secondaryEnvName }
+      };
   markExecutedEnvFile:
     createFile:
       nodeGroup: ${this.nodeGroup}
@@ -91,6 +89,7 @@ actions:
         commandList: [{"command": "rm -rf /root/${this.app_id}.${this.extension:executed}"}],
         userName: "root"
       });
+
   createFile:
     script: |
       return api.env.control.ExecCmdByGroup({
@@ -100,6 +99,7 @@ actions:
         commandList: [{"command": "touch /root/${this.app_id}.${this.extension:lock}"}],
         userName: "root"
       });
+
   executeAction:
     settings: ${settings.toJSON()}
     script: |
@@ -121,11 +121,11 @@ actions:
         }
       });
       if (resp.result != 0) return resp;
-      
+
       if (resp.response && resp.response.apps) {
         uniqueName = resp.response.apps[0].uniqueName;
       }
-      
+
       if (uniqueName) {
         if ("${this.action:}" == "uninstall") {
           return api.marketplace.jps.Uninstall(appid, session, uniqueName);
@@ -139,7 +139,5 @@ actions:
           params: settings
         });
       }
-      
-      return {
-        result: 0
-      }
+
+      return { result: 0 }
