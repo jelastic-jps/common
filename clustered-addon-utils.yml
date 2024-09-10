@@ -1,4 +1,84 @@
 actions:
+  cdnUninstall:
+    - eval:
+        script: uninstall
+    - validateState:
+        nodeGroup: ${targetNodes.nodeGroup}
+        app_id: ${globals.app_id}
+    - checkClustering:
+        nodeGroup: ${targetNodes.nodeGroup}
+        app_id: ${globals.app_id}
+    - if (globals.cluster):
+      - if (!globals.isSecondaryExecuted):
+        - markExecutedEnvFile:
+            nodeGroup: ${targetNodes.nodeGroup}
+            app_id: ${globals.app_id}
+        - if (!globals.isOppositeExecuted):
+          - if (globals.isSecondaryEnv):
+              executeAction:
+                envName: ${globals.primaryEnvName}
+                nodeGroup: ${targetNodes.nodeGroup}
+                action: uninstall
+                app_id: ${globals.app_id}
+          - else:
+              executeAction:
+                envName: ${globals.secondaryEnvName}
+                nodeGroup: ${targetNodes.nodeGroup}
+                action: uninstall
+                app_id: ${globals.app_id}
+        - removeExecutedEnvFile:
+            nodeGroup: ${targetNodes.nodeGroup}
+            app_id: ${globals.app_id}
+        - removeExecutedEnvFile:
+            nodeGroup: ${targetNodes.nodeGroup}
+            app_id: ${globals.app_id}
+            extension: lock
+
+  validateState:
+    script: |
+      var resp;
+      
+      // Check if another process is currently running by checking the existence of lock files
+      resp = api.env.control.ExecCmdByGroup({
+        envName: "${env.name}",
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "[[ -f \"/root/${this.app_id}.lock\" ]] && echo true || echo false"}],
+        userName: "root"
+      });
+      if (resp.result != 0) return resp;
+      var isLocked = resp.responses[0].out == "true";
+
+      if (isLocked) {
+        return {
+          result: 1,
+          error: "Another process is currently running on this environment."
+        };
+      }
+
+      // Validate that no unexpected execution files exist
+      resp = api.env.control.ExecCmdByGroup({
+        envName: "${env.name}",
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "[[ -f \"/root/${this.app_id}.executed\" ]] && echo true || echo false"}],
+        userName: "root"
+      });
+      if (resp.result != 0) return resp;
+      var isExecuted = resp.responses[0].out == "true";
+
+      if (isExecuted) {
+        return {
+          result: 1,
+          error: "Environment deletion has already been executed or is in progress."
+        };
+      }
+
+      // If all validations pass, proceed
+      return {
+        result: 0
+      };
+
   checkClustering:
     script: |
       var primaryEnvName, secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondaryExecuted = false, isOppositeExecuted = false;
@@ -61,6 +141,14 @@ actions:
       });
       if (resp.result != 0) return resp;
       isOppositeExecuted = !!(resp.responses[0].out == "true");
+
+      // Validate state before proceeding
+      var validationResp = api.dev.scripting.Eval("appstore", session, "validateState", {
+        nodeGroup: this.nodeGroup,
+        app_id: this.app_id
+      });
+      if (validationResp.result != 0) return validationResp;
+
       return {
         result: 0,
         onAfterReturn: {
@@ -74,7 +162,6 @@ actions:
           }
         }
       }
-      return { result: 0, secondaryEnvName: secondaryEnvName }
   
   markExecutedEnvFile:
     createFile:
