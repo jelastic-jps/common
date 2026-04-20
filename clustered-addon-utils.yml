@@ -1,4 +1,58 @@
 actions:
+  validateState:
+    script: |
+      var resp;
+      resp = api.env.control.ExecCmdByGroup({
+        envName: "${env.name}",
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "[[ -f \"/root/${this.app_id}.lock\" ]] && echo true || echo false"}],
+        userName: "root"
+      });
+      if (resp.result != 0) return resp;
+      var isLocked = resp.responses[0].out == "true";
+
+      if (isLocked) {
+        return {
+          result: 0,
+          onAfterReturn: {
+            setGlobals: {
+              isValidState: false
+            }
+          }
+        };
+      }
+
+      resp = api.env.control.ExecCmdByGroup({
+        envName: "${env.name}",
+        session: session,
+        nodeGroup: "${this.nodeGroup}",
+        commandList: [{"command": "[[ -f \"/root/${this.app_id}.executed\" ]] && echo true || echo false"}],
+        userName: "root"
+      });
+      if (resp.result != 0) return resp;
+      var isExecuted = resp.responses[0].out == "true";
+
+      if (isExecuted) {
+        return {
+          result: 0,
+          onAfterReturn: {
+            setGlobals: {
+              isValidState: false
+            }
+          }
+        };
+      }
+      
+      return {
+        result: 0,
+        onAfterReturn: {
+          setGlobals: {
+            isValidState: true
+          }
+        }
+      };
+
   checkClustering:
     script: |
       var primaryEnvName, secondaryEnvName, resp, config= {}, isLockEnv = false, isSecondaryExecuted = false, isOppositeExecuted = false;
