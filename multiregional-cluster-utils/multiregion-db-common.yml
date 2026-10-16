@@ -3,16 +3,19 @@ actions:
   - script: |
       var app_name = '${globals.cluster_app}'.toLowerCase(),
       externalIpAddresses = ('${settings.externalIpAddresses}' === 'true'),
-      regions = '${settings.regions}'.split(','), actions = [];
-      for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
-        actions.push({
+      regions = '${settings.regions}'.split(','),
+      ownerUid = '${globals.ownerUid}',
+      resp, cluster, n, payload;
+      for (cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
+        payload = {
+          session: session,
+          appid: appid,
           jps: "${baseUrl}/scripts/manifest_" + app_name + ".jps?_r=${fn.random}",
           envName: "${settings.envName}-" + cluster,
           loggerName: "${settings.envName}-" + cluster,
           envGroups: "${globals.envGroups}",
           displayName: "${globals.displayName-" + cluster + "}",
-          region: regions[cluster-1],
-          ownerUid: "${globals.ownerUid}",
+          region: regions[cluster - 1],
           settings: {
             nodeType: "${settings.nodeType}",
             password: "${globals.password}",
@@ -23,16 +26,28 @@ actions:
             internalNetworkEnabled: "${settings.internalNetworkEnabled}",
             mainEnvName: "${settings.envName}"
           }
-        });
+        };
+        if (ownerUid) payload.ownerUid = ownerUid;
+        resp = api.marketplace.jps.Install(payload);
+        if (resp.result != 0) return resp;
       }
-      return { result: 0, onAfterReturn: { 'marketplace.jps.install': actions } };
+      return { result: 0 };
 
   installClusterLogic:
-    - install: ${baseUrl}/addons/auto-cluster.yaml
-      envName: ${settings.envName}-1
-      settings:
-        regions: ${settings.regions}
-        pgpool2Regions: ${globals.pgpool2Regions}
-        mainEnvName: ${settings.envName}
-        topology: ${settings.topology}
-        masterAddress: ${globals.master_address_sqldb-1}
+    - script: |
+        var ownerUid = '${globals.ownerUid}',
+        params = {
+          session: session,
+          appid: appid,
+          jps: "${baseUrl}/addons/auto-cluster.yaml",
+          envName: "${settings.envName}-1",
+          settings: {
+            regions: "${settings.regions}",
+            pgpool2Regions: "${globals.pgpool2Regions:}",
+            mainEnvName: "${settings.envName}",
+            topology: "${settings.topology}",
+            masterAddress: "${globals.master_address_sqldb-1}"
+          }
+        };
+        if (ownerUid) params.ownerUid = ownerUid;
+        return api.marketplace.jps.Install(params);
