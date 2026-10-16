@@ -12,6 +12,7 @@ actions:
           envGroups: "${globals.envGroups}",
           displayName: "${globals.displayName-" + cluster + "}",
           region: regions[cluster-1],
+          ownerUid: "${globals.ownerUid}",
           settings: {
             nodeType: "${settings.nodeType}",
             password: "${globals.password}",
