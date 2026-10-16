@@ -3,23 +3,15 @@ actions:
   - script: |
       var app_name = '${globals.cluster_app}'.toLowerCase(),
       externalIpAddresses = ('${settings.externalIpAddresses}' === 'true'),
-      regions = '${settings.regions}'.split(','),
-      displayNames = {
-        1: '${globals.displayName-1}',
-        2: '${globals.displayName-2}',
-        3: '${globals.displayName-3}',
-        4: '${globals.displayName-4}',
-        5: '${globals.displayName-5}'
-      },
-      actions = [];
+      regions = '${settings.regions}'.split(','), actions = [];
       for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         actions.push({
           jps: "${baseUrl}/scripts/manifest_" + app_name + ".jps?_r=${fn.random}",
           envName: "${settings.envName}-" + cluster,
           loggerName: "${settings.envName}-" + cluster,
           envGroups: "${globals.envGroups}",
-          displayName: displayNames[cluster],
-          region: regions[cluster - 1],
+          displayName: "${globals.displayName-" + cluster + "}",
+          region: regions[cluster-1],
           ownerUid: "${globals.ownerUid}",
           settings: {
             nodeType: "${settings.nodeType}",
