@@ -5,6 +5,13 @@ actions:
       externalIpAddresses = ('${settings.externalIpAddresses}' === 'true'),
       regions = '${settings.regions}'.split(','),
       ownerUid = '${globals.ownerUid}',
+      displayNames = {
+        1: '${globals.displayName-1}',
+        2: '${globals.displayName-2}',
+        3: '${globals.displayName-3}',
+        4: '${globals.displayName-4}',
+        5: '${globals.displayName-5}'
+      },
       resp, cluster, n, payload;
       for (cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         payload = {
@@ -14,7 +21,7 @@ actions:
           envName: "${settings.envName}-" + cluster,
           loggerName: "${settings.envName}-" + cluster,
           envGroups: "${globals.envGroups}",
-          displayName: "${globals.displayName-" + cluster + "}",
+          displayName: displayNames[cluster],
           region: regions[cluster - 1],
           settings: {
             nodeType: "${settings.nodeType}",
