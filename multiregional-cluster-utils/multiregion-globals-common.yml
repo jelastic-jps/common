@@ -40,4 +40,5 @@ actions:
         glbs["envGroups"] = envGroups;
         glbs["regionsCount"] = regions.length;
         glbs["master_env_name"] = "${settings.envName}-1";
+        glbs["ownerUid"] = "${settings.ownerUid:}" || "${user.uid}";
         return { result: 0, onAfterReturn: onAfterReturn };

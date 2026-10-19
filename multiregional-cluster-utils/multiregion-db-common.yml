@@ -3,7 +3,9 @@ actions:
   - script: |
       var app_name = '${globals.cluster_app}'.toLowerCase(),
       externalIpAddresses = ('${settings.externalIpAddresses}' === 'true'),
-      regions = '${settings.regions}'.split(','), actions = [];
+      regions = '${settings.regions}'.split(','),
+      ownerUid = "${settings.ownerUid:[user.uid]}",
+      actions = [];
       for (var cluster = 1, n = regions.length + 1; cluster < n; cluster ++) {
         actions.push({
           jps: "${baseUrl}/scripts/manifest_" + app_name + ".jps?_r=${fn.random}",
@@ -12,6 +14,7 @@ actions:
           envGroups: "${globals.envGroups}",
           displayName: "${globals.displayName-" + cluster + "}",
           region: regions[cluster-1],
+          ownerUid: ownerUid,
           settings: {
             nodeType: "${settings.nodeType}",
             password: "${globals.password}",
